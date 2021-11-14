@@ -1,0 +1,8 @@
+{
+  "name": "io.github.bycubed7.pathfinding",
+  "displayName": "ByCubed7s Pathfinding Library",
+  "version": "0.0.1",
+  "unity": "2021.1",
+  "description": "An A* pathfinding library.",
+  "type": "library"
+}
