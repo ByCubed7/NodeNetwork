@@ -9,11 +9,11 @@ namespace ByCubed7.Pathfinding
     public class Node
     {
         public Vector2 position;
+        public Vector2Int coord;
+
         public List<Node> neighbour;
 
         public bool hasValue;
-
-        private Vector2Int coord;
 
         public Node(Vector2Int coord, Vector2 position)
         {
