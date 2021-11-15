@@ -1,18 +1,20 @@
+// WTFPL license
+// ByCubed7 ByCubed7@gmail.com
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEngine;
-using UnityEngine.Tilemaps;
 
 namespace ByCubed7.Pathfinding
 {
     public class NodeNetwork
     {
         public static int defaultNodeWeight = 1;
+        private static int inf = 10000;
 
         // TODO: Use a 2D Array of lists of tuples for pro of look up tables
         public Dictionary<(int, int), List<(int, int)>> nodes;
-        public Dictionary<(int, int), int> weights;
+        private Dictionary<(int, int), int> weights;
 
         public NodeNetwork()
         {
@@ -21,6 +23,12 @@ namespace ByCubed7.Pathfinding
             //path = PathfindAStar(nodes[0,6], nodes[14,0]);
         }
 
+        public void Clear() {
+            nodes = new Dictionary<(int, int), List<(int, int)>>();
+            weights = new Dictionary<(int, int), int>();
+        }
+
+        /*
         public void LoadFromTilemap(Tilemap tilemap)
         {
             BoundsInt bounds = tilemap.cellBounds;
@@ -51,6 +59,7 @@ namespace ByCubed7.Pathfinding
                 }
             }
         }
+        */
 
         public List<(int, int)> PathfindAStar((int, int) nodeStart, (int, int) nodeTarget)
         {
@@ -60,7 +69,7 @@ namespace ByCubed7.Pathfinding
             // Check that the starting position exists.
             if (!nodes.ContainsKey(nodeStart))
             {
-                Debug.LogWarning($"[Node Network] Path STARTING POSITION is not accessible.\nNode:{nodeStart}");
+                Log($"Path STARTING POSITION is not accessible.\nNode: {nodeStart}");
                 return new List<(int, int)>();
             }
 
@@ -68,7 +77,7 @@ namespace ByCubed7.Pathfinding
             // Check that the ending position exists.
             if (!nodes.ContainsKey(nodeTarget))
             {
-                Debug.LogWarning($"[Node Network] Path TARGET POSITION is not accessible.\nNode:{nodeTarget}");
+                Log($"Path TARGET POSITION is not accessible.\nNode: {nodeTarget}");
                 return new List<(int, int)>();
             }
 
@@ -107,11 +116,12 @@ namespace ByCubed7.Pathfinding
 
                 nodesToExpand.Remove(current);
 
-                List<(int, int)> neighbours = GetNode(current);
+                List<(int, int)> neighbours = GetNeighbours(current);
 
                 // NOTE: GetNode(current) may return null.
                 if (neighbours == null) {
-                    Debug.LogWarning($"[Node Network] Can not find accessible path.\nNode:{current}");
+                    //Debug.LogWarning($"[Node Network] Can not find accessible path.\nNode:{current}");
+                    Log($"Can not find accessible path.\nNode:{current}");
                     return new List<(int, int)>();
                 }
 
@@ -122,7 +132,7 @@ namespace ByCubed7.Pathfinding
                     // tempGScore is the distance from start to the neighbor through current
                     int tempGScore = gScore[current] + Distance(current, neighbour);
                     //*
-                    if (tempGScore < (gScore.ContainsKey(neighbour) ? gScore[neighbour] : Mathf.Infinity))
+                    if (tempGScore < (gScore.ContainsKey(neighbour) ? gScore[neighbour] : inf))
                     {
                         // If true this path is better than any previous one
                         cameFrom[neighbour] = current;
@@ -153,36 +163,42 @@ namespace ByCubed7.Pathfinding
         }
 
         // The heuristic function
-        public int Score((int, int) node, (int, int) nodeTarget)
+        private int Score((int, int) node, (int, int) nodeTarget)
         {
             float score = 0f;
             //score += node.distance;
             score += Distance(node, nodeTarget);// * heuristic;
-            score += Weight(node);
+            score += GetWeight(node);
             return (int)score;
         }
 
-        public int Distance((int, int) nodeFrom, (int, int) nodeTo) {
-            int changeInX = Mathf.Abs(nodeTo.Item1 - nodeFrom.Item1);
-            int changeInY = Mathf.Abs(nodeTo.Item2 - nodeFrom.Item2);
-            int stability = Mathf.Abs(changeInX - changeInY);
+        private int Distance((int, int) nodeFrom, (int, int) nodeTo) {
+            int changeInX = Math.Abs(nodeTo.Item1 - nodeFrom.Item1);
+            int changeInY = Math.Abs(nodeTo.Item2 - nodeFrom.Item2);
+            int stability = Math.Abs(changeInX - changeInY);
 
             return (changeInX + changeInY) + stability / 2;
         }
 
-        public void AddNode(int x, int y, int weight = -1)
+        public void CreateNode(int x, int y, int weight = -1)
         {
             nodes[(x, y)] = new List<(int, int)>();
             weights[(x, y)] = weight == -1 ? defaultNodeWeight : weight;
         }
 
+        public bool IsValidNode((int, int) node)
+        {
+            return nodes.ContainsKey(node);
+        }
+        public bool IsValidNode(int x, int y) => IsValidNode((x, y));
+
         // Node Neighbours
-        public List<(int, int)> GetNode((int, int) node)
+        public List<(int, int)> GetNeighbours((int, int) node)
         {
             if (nodes.ContainsKey(node)) return nodes[node];
             return null;
         }
-        public List<(int, int)> GetNode(int x, int y) => GetNode((x, y));
+        public List<(int, int)> GetNeighbours(int x, int y) => GetNeighbours((x, y));
 
         public void AddNeighbour((int, int) node, (int, int) neigh)
         {
@@ -191,13 +207,16 @@ namespace ByCubed7.Pathfinding
         public void AddNeighbour(int x1, int y1, int x2, int y2) => AddNeighbour((x1, y1), (x2, y2));
 
         // Node Weight
-        public int Weight((int, int) node)
+        public int GetWeight((int, int) node)
         {
             if (weights.ContainsKey(node)) return weights[node];
-            Debug.LogWarning($"[Node Network] Could not find weight of node, defaulting to 0.\nNode:{node}");
+            Log($"Could not find weight of node, defaulting to 0.\nNode:{node}");
             return 0;
         }
         public void SetWeight((int, int) node, int weight) => weights[node] = weight;
+
+        // Log
+        public virtual void Log(string str) => Console.WriteLine("[Node Network] " + str);
 
     }
 
