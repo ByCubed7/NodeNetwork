@@ -8,7 +8,7 @@ See: [A*_search_algorithm](https://en.wikipedia.org/wiki/A*_search_algorithm)
 #### Unity
 Unity's Package Manager can load a package from a Git repository, See [docs.unity3d](https://docs.unity3d.com/Manual/upm-ui-giturl.html) for more info~
 
-Git: ```https://github.com/ByCubed7/Pathfinding.git```
+Git: ```https://github.com/ByCubed7/NodeNetwork.git```
 
 ![](https://docs.unity3d.com/uploads/Main/PackageManagerUI-GitURLPackageButton.png)
 ![](https://docs.unity3d.com/uploads/Main/PackageManagerUI-GitURLPackageButton-Add.png)
