@@ -54,3 +54,7 @@ crashlytics-build.properties
 
 Packages/
 ProjectSettings/
+ByCubed7.Pathfinding.asmdef.meta
+LICENSE.meta
+package.json.meta
+README.md.meta
