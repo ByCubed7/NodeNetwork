@@ -1,5 +1,5 @@
-# ByCubed7s Pathfinding Library
-A C# (Unity aimed) package that deals with Pathfinding using a network of nodes.
+# ByCubed7s NodeNetwork Library
+A C# (Unity aimed) package that deals with Pathfinding and other neat things using a network of nodes.
 
 See: [A*_search_algorithm](https://en.wikipedia.org/wiki/A*_search_algorithm)
 
