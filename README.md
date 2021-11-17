@@ -18,7 +18,7 @@ Git: ```https://github.com/ByCubed7/Pathfinding.git```
 
 ```cs
 // Importing the libary with:
-using ByCubed7.Pathfinding;
+using ByCubed7.NodeNetwork;
 ```
 
 ```cs

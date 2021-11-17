@@ -5,7 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
-namespace ByCubed7.Pathfinding
+namespace ByCubed7.NodeNetwork
 {
     public class NodeNetwork
     {

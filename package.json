@@ -1,8 +1,8 @@
 {
-  "name": "io.github.bycubed7.pathfinding",
+  "name": "com.github.bycubed7.nodenetwork",
   "displayName": "ByCubed7s Pathfinding Library",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "unity": "2021.1",
-  "description": "An A* pathfinding library.",
+  "description": "A Node Network library with pathfinding!",
   "type": "library"
 }
