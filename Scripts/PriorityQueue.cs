@@ -230,10 +230,6 @@ namespace ByCubed7.PriorityQueue {
             }
         }
 
-		public bool Contains(T element) => _elements[element.index] == element;
-
+	public bool Contains(T element) => _elements[element.index] == element;
     }
-
-
-
 }
