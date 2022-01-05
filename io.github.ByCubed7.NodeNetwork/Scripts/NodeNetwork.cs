@@ -118,12 +118,9 @@ namespace ByCubed7.NodeNetwork
 
                 List<(int, int)> neighbours = GetNeighbours(current);
 
-                // NOTE: GetNode(current) may return null.
-                if (neighbours == null) {
-                    //Debug.LogWarning($"[Node Network] Can not find accessible path.\nNode:{current}");
-                    Log($"Can not find accessible path.\nNode:{current}");
-                    return new List<(int, int)>();
-                }
+                //NOTE: GetNode(current) may return null.
+                if (neighbours == null)
+                   continue;
 
                 for (int i = 0; i < neighbours.Count; i++)
                 {
