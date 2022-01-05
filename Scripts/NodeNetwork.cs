@@ -7,6 +7,16 @@ using System.Collections.Generic;
 
 namespace ByCubed7.NodeNetwork
 {
+    using ByCubed7.PriorityQueue;
+
+    public class Node : PriorityQueueElement {
+        public (int, int) value;
+
+        public Node((int,int) v) {
+            value = v;
+        }
+    }
+
     public class NodeNetwork
     {
         public static int defaultNodeWeight = 1;
@@ -14,6 +24,7 @@ namespace ByCubed7.NodeNetwork
 
         // TODO: Use a 2D Array of lists of tuples for pro of look up tables
         public Dictionary<(int, int), List<(int, int)>> nodes;
+        public int count = 0;
         private Dictionary<(int, int), int> weights;
 
         public NodeNetwork()
@@ -27,39 +38,6 @@ namespace ByCubed7.NodeNetwork
             nodes = new Dictionary<(int, int), List<(int, int)>>();
             weights = new Dictionary<(int, int), int>();
         }
-
-        /*
-        public void LoadFromTilemap(Tilemap tilemap)
-        {
-            BoundsInt bounds = tilemap.cellBounds;
-            TileBase[] allTiles = tilemap.GetTilesBlock(bounds);
-
-            nodes = new Dictionary<(int, int), List<(int, int)>>();
-
-            for (int x = 0; x < bounds.size.x; x++) {
-                for (int y = 0; y < bounds.size.y; y++) {
-                    Tile tile = (Tile)allTiles[x + y * bounds.size.x];
-                    if (tile == null) {
-                        AddNode(x, y);
-                    }
-                }
-            }
-
-            // link neighbours
-            for (int x = 0; x < bounds.size.x; x++) {//nodes.GetLength(0)
-                for (int y = 0; y < bounds.size.y; y++) {
-                    List<(int, int)> currentNode = GetNode(x, y);
-
-                    if (currentNode == null) continue;
-
-                    if (x + 1 < bounds.size.x) AddNeighbour((x, y), (x + 1, y));
-                    if (y + 1 < bounds.size.y) AddNeighbour((x, y), (x, y + 1));
-                    if (x > 0) AddNeighbour((x, y), (x - 1, y));
-                    if (y > 0) AddNeighbour((x, y), (x, y - 1));
-                }
-            }
-        }
-        */
 
         public List<(int, int)> PathfindAStar((int, int) nodeStart, (int, int) nodeTarget)
         {
@@ -84,7 +62,7 @@ namespace ByCubed7.NodeNetwork
             // The set of discovered nodes that may need to be (re-)expanded.
             // Initially, only the start node is known.
             // "This is usually implemented as a min-heap or priority queue rather than a hash-set."
-            List<(int, int)> nodesToExpand = new List<(int, int)>();
+            PriorityQueue<Node> nodesToExpand = new PriorityQueue<Node>(count);
 
             // cameFrom[node] is the node immediately preceding it on path from start
             Dictionary<(int, int), (int, int)> cameFrom = new Dictionary<(int, int), (int, int)>();
@@ -97,24 +75,24 @@ namespace ByCubed7.NodeNetwork
             Dictionary<(int, int), int> fScore = new Dictionary<(int, int), int>();
 
             // Add the starting node
-            nodesToExpand.Add(nodeStart);
             gScore[nodeStart] = 0;
             fScore[nodeStart] = Score(nodeStart, nodeTarget);// + 0 gScore
+            nodesToExpand.Enqueue(new Node(nodeStart), fScore[nodeStart]);
 
             // While nodesToExpand is not empty
             while (nodesToExpand.Count != 0)
             {
                 // (Cube) TODO: Change nodesToExpand to a priority list rather
                 // repeatedly sorting throught the list each time.
-                nodesToExpand.Sort((nodeA, nodeB) => ((int)fScore[nodeA] - (int)fScore[nodeB]));
+                //nodesToExpand.Sort((nodeA, nodeB) => ((int)fScore[nodeA] - (int)fScore[nodeB]));
 
                 // The node in nodesToExpand having the lowest fScore value
-                (int, int) current = nodesToExpand[0];
+                (int, int) current = nodesToExpand.Dequeue().value;
 
                 if (current == nodeTarget)
                     return MakePath(cameFrom, nodeTarget);
 
-                nodesToExpand.Remove(current);
+                //nodesToExpand.Remove(current);
 
                 List<(int, int)> neighbours = GetNeighbours(current);
 
@@ -135,8 +113,9 @@ namespace ByCubed7.NodeNetwork
                         cameFrom[neighbour] = current;
                         gScore[neighbour] = tempGScore;
                         fScore[neighbour] = gScore[neighbour] + Score(neighbour, nodeTarget);
-                        if (!nodesToExpand.Contains(neighbour))
-                            nodesToExpand.Add(neighbour);
+                        if (!nodesToExpand.Contains(new Node(neighbour)))
+                            nodesToExpand.Enqueue(new Node(neighbour), fScore[neighbour]);
+                            //nodesToExpand.Add(neighbour);
                     }//*/
                 }//*/
             }
@@ -181,6 +160,7 @@ namespace ByCubed7.NodeNetwork
         {
             nodes[(x, y)] = new List<(int, int)>();
             weights[(x, y)] = weight == -1 ? defaultNodeWeight : weight;
+            count++;
         }
 
         public bool IsValidNode((int, int) node)
